@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>역사 2차 수행준비 플래시카드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .progress-section {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-right: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .card-section {
+            padding: 40px 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+        }
+
+        .question {
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .answer-display {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 100%;
+            display: none;
+        }
+
+        .answer-display.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer-display.correct {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .answer-display.incorrect {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .stats {
+            padding: 20px;
+            background: #f8f9fa;
+            text-align: center;
+            display: none;
+        }
+
+        .stats.show {
+            display: block;
+        }
+
+        .stats h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .welcome-message h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .flashcard {
+                padding: 30px 20px;
+            }
+            
+            .question {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 역사 2차 수행준비 플래시카드<h1>
+            <p>2025 역사 수행평가 대비 플래시카드</p>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn" onclick="setMode('termToDefinition', this)">단어 → 뜻</button>
+            <button class="mode-btn" onclick="setMode('definitionToTerm', this)">뜻 → 단어</button>
+            <button class="mode-btn" onclick="setMode('mixed', this)">전체 문제</button>
+            <button class="mode-btn" onclick="resetQuiz()">처음부터</button>
+        </div>
+
+        <div class="progress-section" id="progressSection" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">0 / 0</div>
+        </div>
+
+        <div class="card-section">
+            <div class="welcome-message" id="welcomeMessage">
+                <h2>학습 모드를 선택해주세요!</h2>
+                <p>
+                    <strong>단어 → 뜻:</strong> 역사 용어를 보고 뜻을 맞추기<br>
+                    <strong>뜻 → 단어:</strong> 설명을 보고 용어 맞추기<br>
+                    <strong>전체 문제:</strong> 두 가지 모드를 랜덤하게 학습
+                </p>
+                <p style="color: #667eea; font-weight: 500;">
+                    💡 한 바퀴를 돌기 전까지 같은 문제는 반복되지 않습니다
+                </p>
+            </div>
+
+            <div id="flashcardContainer" style="display: none; width: 100%;">
+                <div class="flashcard">
+                    <div class="question" id="questionText"></div>
+                    <input type="text" class="answer-input" id="answerInput" 
+                           placeholder="답을 입력하세요" onkeypress="handleKeyPress(event)">
+                    <div class="answer-display" id="answerDisplay"></div>
+                    <div class="control-buttons">
+                        <button class="btn" onclick="checkAnswer()">확인</button>
+                        <button class="btn btn-secondary" onclick="showAnswer()">답 보기</button>
+                        <button class="btn" id="nextBtn" onclick="nextQuestion()" style="display: none;">다음 문제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats" id="statsSection">
+            <h3>🎉 학습 완료!</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>전체 문제</h4>
+                    <p id="totalQuestions">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>정답</h4>
+                    <p id="correctAnswers" style="color: #28a745;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>오답</h4>
+                    <p id="incorrectAnswers" style="color: #dc3545;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>정답률</h4>
+                    <p id="accuracy">0%</p>
+                </div>
+            </div>
+            <button class="btn" onclick="resetQuiz()" style="margin-top: 20px;">다시 학습하기</button>
+        </div>
+    </div>
+
+    <script>
+        const flashcards = [
+            {
+                term: "대량 살상 무기",
+                definition: "핵무기, 생화학 무기, 무기를 운반하는 미사일 등 많은 사람을 희생시킬 수 있는 무기"
+            },
+            {
+                term: "홀로코스트",
+                definition: "제2차 세계 대전 중 독일 나치스가 행한 유대인 대학살. 제2차 세계 대전 중에 독일의 나치스는 홀로코스트를 일으켰다. 이들은 유대인을 수용소로 끌고 가 강제 노동을 시켰으며, 노동을 시킬 수 없는 유대인들은 가스실에서 죽게 하였다."
+            },
+            {
+                term: "위안부",
+                definition: "일본은 전쟁을 치르는 동안 일본군이 주둔한 지역 곳곳에 군대 위안소를 설치했다. 한국, 중국, 필리핀, 인도네시아 등의 점령지에서 수만 명의 여성들을 강제로 끌고 가 일본군 '위안부'의 끔찍한 삶을 강요했다."
+            },
+            {
+                term: "731부대",
+                definition: "일본은 만주에 설치한 731 부대에서 조선인과 중국인 등을 대상으로 신체 해부, 냉동 실험, 세균 투입과 같은 각종 비인간적이고 비인륜적인 실험을 행하였다."
+            },
+            {
+                term: "하시마(군함도)",
+                definition: "일제강점기 수 많은 한국인 노동자들은 하시마(군함도)에 징용으로 끌려가 하루 12시간 이상 해저 탄광에서 혹독한 노동을 강요당하였다."
+            },
+            {
+                term: "극동 국제 군사 재판",
+                definition: "제2차 세계대전 이후 일본군의 주요 전쟁범죄자를 처벌하기 위해 도쿄에서 열린 국제 군사재판. 그러나 재판은 전행의 핵심 책임자인 천황을 제의한 채 진행되었고, 731부대의 범죄 행위가 덮였다는 한계가 있다."
+            },
+            {
+                term: "국제 연합(UN)",
+                definition: "제2차 세계 대전 이후에는 영토 불확대, 민족 자결 등을 규정한 대서양 헌장의 정신에 따라 국제 연합(UN)을 창설하였다. 국제 평화와 안전 유지, 국제 협력을 목표로 한다. 국제 분쟁을 해결하기 위해 군사력을 동원할 수 있다."
+            },
+            {
+                term: "보통선거",
+                definition: "성별, 인종, 종교, 빈부에 상관없이 일정 연령 이상의 시민권 보유자에게 투표를 보장하는 것. 여성의 사회적·경제적 참여가 늘어나 참정권이 확산되는 계기가 되었다."
+            },
+            {
+                term: "노동조합",
+                definition: "노동자들이 회사의 불합리한 대우에 대처하고 적법힌 이익을 누리기 위해 결성한 단체. 제1차 세계 대정을 전후하여 자본주의가 발달하면서 노동자들을 생산과 소비의 주체로서 경제적 역할이 커졌다. 전쟁 중에는 각국의 노동자들이 자기 나라의 승리를 위해 적극 협조하였다. 이에 힘입어 노동자들의 사회적 지위가 점차 올라갔다."
+            },
+            {
+                term: "미국 뉴욕 월 스트리트",
+                definition: "뉴욕 맨해튼 남부의 금융가로 세계 금융의 중심. 미국 기업이 크게 성장하고 사업이 활발해지면서 증권 거래소가 있는 월 스트리트는 주식 거래를 하려는 사람들로 붐볐다."
+            },
+            {
+                term: "서부 전선",
+                definition: "제1차 세계 대전 때 독일군과 연합군이 싸운 프랑스 동북부 지역"
+            },
+            {
+                term: "소비에트",
+                definition: "러시아어로 '대표자 회의'라는 뜻이다. 노동자와 군인들은 소비에트를 결성하여 전제 군주제를 무너뜨리고 임시정부를 수립했다."
+            },
+            {
+                term: "볼셰비키",
+                definition: "러시아 사회 민주 노동당의 주도권을 가진 다수파로, 혁명적 투쟁 방식을 주장."
+            },
+            {
+                term: "신경제 정책",
+                definition: "소비에트 정부가 토지와 산업을 국유화 하고 사회주의 개혁을 추진하는 과정에서 경제난이 심해지자 자본주의 요소를 일부 도입하여 만든 정책."
+            },
+            {
+                term: "윌슨의 14개조 평화 원칙",
+                definition: "제1차 세계 대전이 끝나자 연합국은 전후 문제를 처리하기 위해 파리 강화 회의를 열었다. 이 회의는 미국 대통령 윌슨이 제안하였던 14개조 평화 원칙을 바탕으로 진행. 식민 지배를 받고 있는 나라와 민족의 주권 문제는 식민지 주민의 이익과 손해가 반영되어야 하며 공평하게 처리되어야 한다는 민족 자결주의가 포함되었다. 그러나 이 원책은 패전국의 식민지 일부에만 적용되었다."
+            },
+            {
+                term: "5•4 운동",
+                definition: "1차 세계대전 이후 전후 처리를 논의한 파리 강화 회의에서 산둥반도의 이권이 일본에 넘어가자, 중국에서 21개조 요구 철회와 산둥반도의 이권 반환을 요구하는 5•4 운동(민족운동)이 일어났다."
+            },
+            {
+                term: "비폭력 불복종 운동",
+                definition: "간디는 영국의 식민 지배에 맞서 '비폭력•불복종 운동'을 제안했다. 이는 폭력을 쓰지 않고 영국의 법률이나 명령을 따르지 않는 운동이다."
+            },
+            {
+                term: "대공황",
+                definition: "세계적으로 일어나는 큰 규모의 경제 공황으로 흔히 1929년에 발생한 경제 불황상태. 불황기에는 대체로 경제 활동이 침체되어 물가와 임금이 내리고 생산이 위축되며 실업이 늘어난다."
+            },
+            {
+                term: "뉴딜정책",
+                definition: "대공황을 극복하기 위해 미국 루스벨트 대통령은 자유 방임의 경제 원칙을 수정하여 정부가 생산 활동의 적극 개입하는 뉴딜 정책을 펼쳤다. 이를 통해 미국은 대규모 공공사업을 벌여 실업자를 구제하였다."
+            },
+            {
+                term: "전체주의",
+                definition: "개인의 모든 활동은 민족이나 국가와 같은 전체의 발전을 위하여서만 존재한다는 이념을 바탕으로 국가 권력이 국민 생활을 통제하는 독재 체제."
+            }
+        ];
+
+        let currentMode = null;
+        let availableQuestions = [];
+        let currentQuestion = null;
+        let answeredQuestions = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let hasAnswered = false;
+
+        function setMode(mode, button) {
+            currentMode = mode;
+            resetQuiz();
+            startQuiz();
+
+            // Update active button
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (button) {
+                button.classList.add('active');
+            }
+        }
+
+        function resetQuiz() {
+            availableQuestions = [];
+            answeredQuestions = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            hasAnswered = false;
+            
+            document.getElementById('welcomeMessage').style.display = 'block';
+            document.getElementById('flashcardContainer').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('statsSection').classList.remove('show');
+            
+            // Reset active buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
+        function startQuiz() {
+            if (!currentMode) return;
+
+            // Prepare questions based on mode
+            availableQuestions = [];
+            flashcards.forEach((card, index) => {
+                if (currentMode === 'termToDefinition') {
+                    availableQuestions.push({
+                        id: index,
+                        question: card.term,
+                        answer: card.definition,
+                        type: 'termToDefinition'
+                    });
+                } else if (currentMode === 'definitionToTerm') {
+                    availableQuestions.push({
+                        id: index,
+                        question: card.definition,
+                        answer: card.term,
+                        type: 'definitionToTerm'
+                    });
+                } else if (currentMode === 'mixed') {
+                    availableQuestions.push({
+                        id: index * 2,
+                        question: card.term,
+                        answer: card.definition,
+                        type: 'termToDefinition'
+                    });
+                    availableQuestions.push({
+                        id: index * 2 + 1,
+                        question: card.definition,
+                        answer: card.term,
+                        type: 'definitionToTerm'
+                    });
+                }
+            });
+
+            // Shuffle questions
+            availableQuestions = availableQuestions.sort(() => Math.random() - 0.5);
+
+            document.getElementById('welcomeMessage').style.display = 'none';
+            document.getElementById('flashcardContainer').style.display = 'block';
+            document.getElementById('progressSection').style.display = 'flex';
+
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (availableQuestions.length === 0) {
+                showStats();
+                return;
+            }
+
+            hasAnswered = false;
+            currentQuestion = availableQuestions.pop();
+            
+            document.getElementById('questionText').textContent = currentQuestion.question;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('answerDisplay').className = 'answer-display';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            updateProgress();
+        }
+
+        function checkAnswer() {
+            if (hasAnswered) return;
+
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            if (!userAnswer) {
+                alert('답을 입력해주세요!');
+                return;
+            }
+
+            hasAnswered = true;
+            const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(currentQuestion.answer);
+            
+            const answerDisplay = document.getElementById('answerDisplay');
+            
+            if (isCorrect) {
+                correctCount++;
+                answerDisplay.innerHTML = '<strong>정답입니다!</strong> 🎉';
+                answerDisplay.className = 'answer-display show correct';
+            } else {
+                incorrectCount++;
+                answerDisplay.innerHTML = '<strong>오답입니다.</strong><br>정답: ' + currentQuestion.answer;
+                answerDisplay.className = 'answer-display show incorrect';
+            }
+
+            answeredQuestions++;
+            document.getElementById('answerInput').disabled = true;
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            updateProgress();
+        }
+
+        function showAnswer() {
+            if (hasAnswered) return;
+
+            hasAnswered = true;
+            incorrectCount++;
+            answeredQuestions++;
+
+            const answerDisplay = document.getElementById('answerDisplay');
+            answerDisplay.innerHTML = '<strong>정답:</strong> ' + currentQuestion.answer;
+            answerDisplay.className = 'answer-display show';
+            
+            document.getElementById('answerInput').disabled = true;
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            updateProgress();
+        }
+
+        function normalizeAnswer(answer) {
+            // Remove spaces and convert to lowercase for comparison
+            return answer.toLowerCase().replace(/\s+/g, '').replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+        }
+
+        function updateProgress() {
+            const total = answeredQuestions + availableQuestions.length;
+            const progress = (answeredQuestions / total) * 100;
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = answeredQuestions + ' / ' + total;
+        }
+
+        function showStats() {
+            document.getElementById('flashcardContainer').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('statsSection').classList.add('show');
+            
+            const total = correctCount + incorrectCount;
+            const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+            
+            document.getElementById('totalQuestions').textContent = total;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('incorrectAnswers').textContent = incorrectCount;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                if (hasAnswered) {
+                    nextQuestion();
+                } else {
+                    checkAnswer();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
